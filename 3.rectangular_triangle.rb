@@ -8,12 +8,12 @@ puts "Введите третью сторону треугольника:"
 side3 = gets.chomp
 
 sides = [side1, side2, side3].collect { |el| el.to_i }
-                             .sort { |a,b| b<=>a }
+                             .sort
 
 
 # прямоугольный?
 def is_rectangular?(sides)
-  sides[0]**2 == sides[1]**2 + sides[2]**2
+  sides[2]**2 == sides[1]**2 + sides[0]**2
 end
 
 # равносторонний?
@@ -26,15 +26,13 @@ def is_isosceles?(sides)
   sides.uniq.count == 2
 end
 
-case true
-when is_rectangular?(sides)
+if is_rectangular?(sides)
   puts "Треугольник прямоугольный."
-when is_equilateral?(sides)
+elsif is_equilateral?(sides)
   puts "Треугольник равносторонний и равнобедренный."
-when is_isosceles?(sides)
+elsif is_isosceles?(sides)
   puts "Треугольник равнобедренный."
 else
   puts "Треугольник разносторонний"
 end
-
 
