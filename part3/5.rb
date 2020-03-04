@@ -16,9 +16,9 @@ end
 MONTHS['Февраль'] = 29 if is_leap(year)
 
 result = date
-MONTHS.each_with_index do |(m, d), i|
+MONTHS.values.each_with_index do |days, i|
   break if i + 1 == month
-  result += d
+  result += days
 end
 
 puts result

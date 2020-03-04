@@ -1,5 +1,3 @@
-require 'pry'
-
 basket = {}
 
 while true
