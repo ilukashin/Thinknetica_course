@@ -7,7 +7,7 @@ side2 = gets.chomp
 puts "Введите третью сторону треугольника:"
 side3 = gets.chomp
 
-sides = [side1, side2, side3].collect { |el| el.to_i }
+sides = [side1, side2, side3].collect {&:to_i }
                              .sort
 
 
