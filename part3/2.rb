@@ -1,3 +1,3 @@
-arr = (10..100).to_a.each_with_object([]) { |value, result| result << value if value % 5 == 0 }
+arr = (10..100).step(5).to_a
 
 p arr
