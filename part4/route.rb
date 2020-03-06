@@ -5,11 +5,11 @@
 # Может выводить список всех станций по-порядку от начальной до конечной
 
 class Route
-  attr_reader :departure, :destionation
+  attr_reader :departure, :destination
 
-  def initialize(departure, destionation)
+  def initialize(departure, destination)
     @departure = departure
-    @destionation = destionation
+    @destination = destination
     @intermediate_points = []
   end
 
@@ -24,10 +24,10 @@ class Route
   end
 
   def route_points
-    [departure] + @intermediate_points + [destionation]
+    [departure] + @intermediate_points + [destination]
   end
 
   def to_s
-    "Маршрут: #{departure} - #{destionation}"
+    "Маршрут: #{departure} - #{destination}"
   end
 end
