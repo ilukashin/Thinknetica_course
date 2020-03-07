@@ -1,16 +1,10 @@
 class Station
   attr_reader :trains, :name
-  
-  private
-
-  attr_writer :trains
 
   def initialize(name)
     @name = name
     @trains = []
   end
-
-  public
 
   def arrive_train(train)
     trains << train
@@ -27,4 +21,9 @@ class Station
   def to_s
     "Остановка: #{name}"
   end
+
+  private
+
+  attr_writer :trains
+  
 end

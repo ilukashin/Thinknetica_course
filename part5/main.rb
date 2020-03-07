@@ -119,7 +119,7 @@ class Main
   def create_route
     if stations.size < 2
       puts 'Не хватает точек маршрута. Создать? [y/n]'
-      create_station if input_string == 'y'
+      create_station if input_string.eql?('y')
     else
       puts 'Создание маршрута.', 'Выберите точку отправления:'
       show_stations
@@ -131,7 +131,7 @@ class Main
 
       routes << Route.new(stations[from], stations[to])
       puts 'Маршрут создан. Хотите добавить промежуточные точки? [y/n]'
-      add_point if input_string == 'y'
+      add_point if input_string.eql?('y')
     end
   end
 

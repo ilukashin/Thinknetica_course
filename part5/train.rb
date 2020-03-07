@@ -1,21 +1,12 @@
 class Train
   attr_reader :speed, :vagons, :current_station, :type, :number
 
-  private 
-
-  attr_accessor :current_station_index
-  attr_writer :speed, :vagons, :current_station
-  attr_reader :route
-
   def initialize(number, type)
     @number = number
     @type = type
-
     @vagons = []
     @speed = 0
   end
-
-  public
 
   def increase_speed(speed = 1)
     self.speed += speed
@@ -26,20 +17,17 @@ class Train
   end
 
   def attach_vagon(vagon)
-    if is_staying
-      if vagon_available?(vagon)
-        vagons << vagon
-        vagon.is_attached = true
-      else
-         puts 'Не подходящий вагон!'
-      end
+    return puts 'Нужно остановиться!' unless is_staying?
+    if vagon_available?(vagon)
+      vagons << vagon
+      vagon.is_attached = true
     else
-      puts('Нужно остановиться!')
+       puts 'Не подходящий вагон!'
     end
   end
 
   def detach_vagon
-    if is_staying
+    if is_staying?
       vagon = vagons.last
       vagons.delete(vagon)
       vagon.is_attached = false
@@ -77,8 +65,12 @@ class Train
   # это его внутренняя реализация, которую мы инкапсулируем
   private
 
-  def is_staying
-    speed == 0
+  attr_accessor :current_station_index
+  attr_writer :speed, :vagons, :current_station
+  attr_reader :route
+
+  def is_staying?
+    speed.zero?
   end
 
   def vagon_available?(vagon)
