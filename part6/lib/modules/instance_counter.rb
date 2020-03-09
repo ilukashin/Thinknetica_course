@@ -12,7 +12,7 @@ module InstanceCounter
     end
 
     def instances_enumerator
-      self.instances = instances + 1
+      self.instances += 1
     end
   end
 

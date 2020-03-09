@@ -2,11 +2,10 @@ class Train
   include Manufacturer, InstanceCounter
   attr_reader :speed, :vagons, :current_station, :type, :number
 
-  @@trains = []
+  @@trains = {}
 
   def self.find(number)
-    @@trains.select { |train| train.number.eql?(number) }
-            .first
+    @@trains[number]
   end
 
   def initialize(number, type)
@@ -14,7 +13,7 @@ class Train
     @type = type
     @vagons = []
     @speed = 0
-    @@trains << self
+    @@trains[number] = self
     register_instance
   end
 
