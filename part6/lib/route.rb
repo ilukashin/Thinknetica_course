@@ -1,10 +1,12 @@
 class Route
+  include InstanceCounter
   attr_reader :departure, :destination
 
   def initialize(departure, destination)
     @departure = departure
     @destination = destination
     @intermediate_points = []
+    register_instance
   end
 
   def add_intermediate_point(point)

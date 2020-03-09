@@ -1,4 +1,5 @@
 class Vagon
+  include Manufacturer
   attr_accessor :is_attached
   attr_reader :type
   

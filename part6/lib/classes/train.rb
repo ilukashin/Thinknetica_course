@@ -1,11 +1,21 @@
 class Train
+  include Manufacturer, InstanceCounter
   attr_reader :speed, :vagons, :current_station, :type, :number
+
+  @@trains = []
+
+  def self.find(number)
+    @@trains.select { |train| train.number.eql?(number) }
+            .first
+  end
 
   def initialize(number, type)
     @number = number
     @type = type
     @vagons = []
     @speed = 0
+    @@trains << self
+    register_instance
   end
 
   def increase_speed(speed = 1)

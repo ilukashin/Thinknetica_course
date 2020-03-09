@@ -1,13 +1,5 @@
-require_relative 'station'
-require_relative 'route'
-# сначала загружаем абстрактные классы
-require_relative 'train'
-require_relative 'vagon'
-# потом конкретные реализации
-require_relative 'passenger_train'
-require_relative 'cargo_train'
-require_relative 'passenger_vagon'
-require_relative 'cargo_vagon'
+Dir["./lib/modules/*.rb"].each { |file| require file }
+Dir["./lib/*.rb"].each { |file| require file }
 
 class Main
   attr_accessor :stations, :trains, :vagons, :routes
