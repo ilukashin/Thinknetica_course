@@ -2,6 +2,9 @@ class Station
   include InstanceCounter
   attr_reader :trains, :name
 
+  NAME_FORMAT = /\w+/
+  NAME_LENGTH = 3
+
   @@stations = []
 
   def self.all
@@ -12,7 +15,15 @@ class Station
     @name = name
     @trains = []
     @@stations << self
+    validate!
     register_instance
+  end
+
+  def valid?
+    validate!
+    true
+  rescue StandardError
+    false
   end
 
   def arrive_train(train)
@@ -34,5 +45,9 @@ class Station
   private
 
   attr_writer :trains
-  
+
+  def validate!
+    raise "Invalid name '#{name}'" if name !~ NAME_FORMAT
+    raise 'Name is too short!' if name.length < NAME_LENGTH
+  end
 end

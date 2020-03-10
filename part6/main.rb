@@ -1,4 +1,5 @@
 Dir["./lib/modules/*.rb"].each { |file| require file }
+Dir["./lib/classes/*.rb"].each { |file| require file }
 Dir["./lib/*.rb"].each { |file| require file }
 
 class Main
@@ -44,7 +45,7 @@ class Main
 
   def run
     loop do
-      puts 'Выберите действие:', ACTIONS_DISCRIPTION
+      invitation_to_make_choice(ACTIONS_DISCRIPTION)
       case selected_option
       when 1 then create_station
       when 2 then create_train
@@ -56,18 +57,22 @@ class Main
       when 8 then stations_info
       when 9 then exit
         break
-      else wrong_input
+      else info_wrong_input
       end
     end
   end
 
   private 
 
+  def invitation_to_make_choice(options_list = nil)
+    puts 'Выберите нужный вариант:'
+    puts options_list if options_list
+  end
+
   def create_station
     puts 'Создание станции.', 'Введите название:'
-    station = Station.new(input_string)
-    stations << station
-    puts "Успешно создана станция #{station}!"
+    stations << Station.new(input_string)
+    info_success
   end
 
   def input_string
@@ -75,36 +80,47 @@ class Main
   end
 
   def create_train
-    puts 'Создание поезда.', 'Выберите тип поезда:', TYPES
+    puts 'Создание поезда.'
+    invitation_to_make_choice(TYPES)
     case selected_option
     when 1 
       puts 'Введите номер:'
-      trains << PassengerTrain.new(input_string)
-      puts 'Успешно создан пассажирский поезд!'
+      train = PassengerTrain.new(input_string)
+      trains << train
+      info_success(train)
     when 2
       puts 'Введите номер:'
-      trains << CargoTrain.new(input_string)
-      puts 'Успешно создан грузовой поезд!'
+      train = CargoTrain.new(input_string)
+      trains << train
+      info_success(train)
     else
-      wrong_input
+      info_wrong_input
     end
+  rescue StandardError => e
+    puts '!!! Error: ' + e.message
+    retry
   end
 
   def selected_option
     gets.chomp.to_i
   end
 
-  def wrong_input
+  def info_wrong_input
     puts 'Неправильный ввод!'
   end
 
+  def info_success(info = nil)
+    puts 'Успешно!'
+    puts info if info
+  end
+
   def create_and_manage_route
-    puts 'Выберите действие:', ROUTE_OPTIONS
+    invitation_to_make_choice(ROUTE_OPTIONS)
     case selected_option
     when 1 then create_route
     when 2 then add_point
     when 3 then delete_point
-    else wrong_input
+    else info_wrong_input
     end
   end
 
@@ -113,12 +129,11 @@ class Main
       puts 'Не хватает точек маршрута. Создать? [y/n]'
       create_station if input_string.eql?('y')
     else
-      puts 'Создание маршрута.', 'Выберите точку отправления:'
-      show_stations
+      puts 'Создание маршрута. <Откуда> - <Куда>'
+      invitation_to_make_choice(get_all_stations)
       from = selected_option
 
-      puts 'Выберите точку назначения:'
-      show_stations
+      invitation_to_make_choice(get_all_stations)
       to = selected_option
 
       routes << Route.new(stations[from], stations[to])
@@ -127,56 +142,56 @@ class Main
     end
   end
 
-  def show_stations
-    stations.each_with_index { |station, i| puts "#{i} - #{station.name}" }
+  def get_all_stations
+    stations.each_with_index { |station, i| "#{i} - #{station.name}" }
   end
 
   def add_point
-    puts 'Выберите маршрут:'
-    show_routes
+    invitation_to_make_choice(get_all_routes)    
     route = routes[selected_option]
     if route
-      puts 'Выберите станцию:'
-      show_stations
+      invitation_to_make_choice(get_all_stations)
       station = stations[selected_option]
       route.add_intermediate_point(station)
-      puts 'Успешно добавлена точка маршрута.'
+      info_success
     else
-      wrong_input
+      info_wrong_input
     end
   end
 
-  def show_routes
-    routes.each_with_index { |route, i| puts "#{i} - #{route.departure} - #{route.destination}" }
+  def get_all_routes
+    routes.collect.with_index { |route, i| "#{i} - #{route.departure} - #{route.destination}" }
   end
 
   def delete_point
-    puts 'Выберите маршрут'
-    show_routes
+    invitation_to_make_choice(get_all_routes)
     route = routes[selected_option]
     
     puts 'Какую точку удалить?'
     points = route.route_points
-    points.each_with_index { |point, i| puts "#{i} - #{point}" }
+    invitation_to_make_choice(get_all_route_points(points))
     point_to_delete = points[selected_option]
 
     route.delete_intermediate_point(point_to_delete)
   end
 
+  def get_all_route_points(points)
+    points.collect.with_index { |point, i| "#{i} - #{point}" }
+  end
+
   def assign_route_to_train
-    puts 'Назначение маршрута', 'Выберите поезд:'
-    show_trains
+    puts 'Назначение маршрута'
+    invitation_to_make_choice(get_all_trains)
     train = trains[selected_option]
 
-    puts 'Выберите маршрут:'
-    show_routes
+    invitation_to_make_choice(get_all_routes)
     route = routes[selected_option]
 
     train.route = route
   end
 
-  def show_trains
-    trains.each_with_index { |train, i| puts "#{i} - #{train.number}, #{train.type}" }
+  def get_all_trains
+    trains.collect.with_index { |train, i| "#{i} - #{train.number}, #{train.type}" }
   end
   
   def add_vagons_to_train
@@ -187,7 +202,7 @@ class Main
         case input_string 
         when 'y' then create_vagon
         when 'n' then break
-        else wrong_input
+        else info_wrong_input
         end
       else
         if trains.empty?
@@ -195,19 +210,17 @@ class Main
           case input_string 
           when 'y' then create_train
           when 'n' then break
-          else wrong_input
+          else info_wrong_input
           end
         else
-          puts 'Выберите поезд:'
-          show_trains
+          invitation_to_make_choice(get_all_trains)
           train = trains[selected_option]
 
-          puts 'Выберите вагон:'
-          show_available_vagons
+          invitation_to_make_choice(get_all_available_vagons)
           vagon = vagons[selected_option]
 
           train.attach_vagon(vagon)
-          puts 'Успешно прицеплен вагон!'
+          info_success
           break
         end
       end
@@ -218,56 +231,53 @@ class Main
     vagons.select { |vagon| vagon unless vagon.is_attached }
   end
   
-  def show_available_vagons
-    vagons.each_with_index { |vagon, i| puts "#{i} - #{vagon.type}" unless vagon.is_attached }
+  def get_all_available_vagons
+    vagons.collect.with_index { |vagon, i| "#{i} - #{vagon.type}" unless vagon.is_attached }
   end
   
   def create_vagon
-    puts 'Выберите тип вагона:', TYPES
+    invitation_to_make_choice(TYPES)
     case selected_option
     when 1
       vagons << PassengerVagon.new
-      puts 'Успешно создан пассажирский вагон!'
+      info_success
     when 2
       vagons << CargoVagon.new
-      puts 'Успешно создан грузовой вагон!'
+      info_success
     else
-      wrong_input
+      info_wrong_input
     end
   end
 
   def delete_vagons_from_train
-    puts 'От какого поезда хотите отцепить вагон?'
-    show_not_empty_trains
+    invitation_to_make_choice(get_all_not_empty_trains)
     train = trains[selected_option]
     if train
       train.detach_vagon
-      puts 'Успешно отцеплен вагон!'
+      info_success
     else
-      wrong_input
+      info_wrong_input
     end
   end
 
-  def show_not_empty_trains
-    trains.each_with_index { |train, i| puts "#{i} - #{train.number}, #{train.type}" if train.vagons.count > 0 }
+  def get_all_not_empty_trains
+    trains.collect.with_index { |train, i| "#{i} - #{train.number}, #{train.type}" if train.vagons.count > 0 }
   end
 
   def move_train
-    puts 'Выберите поезд:'
-    show_trains
+    invitation_to_make_choice(get_all_trains)
     train = trains[selected_option]
 
-    puts 'Выберите действие:', MOVE_OPTIONS
+    invitation_to_make_choice(MOVE_OPTIONS)
     case selected_option
     when 1 then train.move_forward
     when 2 then train.move_backward
-    else wrong_input
+    else info_wrong_input
     end
   end
 
   def stations_info
-    puts 'Список станций:'
-    show_stations
+    invitation_to_make_choice(get_all_stations)
     station = stations[selected_option]
 
     puts "Список поездов на станции #{station}:"

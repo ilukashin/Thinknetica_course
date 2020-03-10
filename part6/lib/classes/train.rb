@@ -2,6 +2,10 @@ class Train
   include Manufacturer, InstanceCounter
   attr_reader :speed, :vagons, :current_station, :type, :number
 
+  TYPE_FORMAT = /\w+/
+  NUMBER_FORMAT = /^\w{3}-?\w{2}$/
+  NUMBER_LENGTH = 5
+
   @@trains = {}
 
   def self.find(number)
@@ -14,7 +18,15 @@ class Train
     @vagons = []
     @speed = 0
     @@trains[number] = self
+    validate!
     register_instance
+  end
+
+  def valid?
+    validate!
+    true
+  rescue StandardError
+    false
   end
 
   def increase_speed(speed = 1)
@@ -31,7 +43,7 @@ class Train
       vagons << vagon
       vagon.is_attached = true
     else
-       puts 'Не подходящий вагон!'
+      raise 'Не подходящий вагон!'
     end
   end
 
@@ -41,7 +53,7 @@ class Train
       vagons.delete(vagon)
       vagon.is_attached = false
     else 
-      puts 'Нужно остановиться!'
+      raise 'Нужно остановиться!'
     end
   end
 
@@ -67,7 +79,7 @@ class Train
   end
 
   def to_s
-    "Поезд  №#{number},#{type}\nОстановка: #{current_station}\n#{route}"
+    "Поезд №#{number}, тип - #{type}"
   end
 
   # ниже все методы приватные, потому что они используются только внутри класса train
@@ -77,6 +89,12 @@ class Train
   attr_accessor :current_station_index
   attr_writer :speed, :vagons, :current_station
   attr_reader :route
+
+  def validate!
+    raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
+    raise 'Invalid number length' unless number.sub('-','').length.eql?(NUMBER_LENGTH)
+    raise "Invalid type '#{type}'" if type !~ TYPE_FORMAT 
+  end
 
   def is_staying?
     speed.zero?
