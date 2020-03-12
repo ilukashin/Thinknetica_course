@@ -19,6 +19,10 @@ class Station
     register_instance
   end
 
+  def each_train(&block)
+    trains.each { |train| block.call(train) }
+  end
+
   def valid?
     validate!
     true

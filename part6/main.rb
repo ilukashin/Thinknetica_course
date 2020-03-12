@@ -11,6 +11,8 @@ class Main
     3 - Создать маршрут и управлять станциями в нем (добавлять, удалять)
     4 - Назначить маршрут поезду
     5 - Добавить вагоны к поезду
+    55 - Посмотреть вагоны поезда
+    56 - Заполнить вагон
     6 - Отцепить вагоны от поезда
     7 - Перемещение поездов
     8 - Список станций и список поездов на станциях
@@ -52,6 +54,8 @@ class Main
       when 3 then create_and_manage_route
       when 4 then assign_route_to_train
       when 5 then add_vagons_to_train
+      when 55 then list_train_vagons
+      when 56 then fill_vagon
       when 6 then delete_vagons_from_train
       when 7 then move_train
       when 8 then stations_info
@@ -239,15 +243,57 @@ class Main
     invitation_to_make_choice(TYPES)
     case selected_option
     when 1
-      vagons << PassengerVagon.new
+      vagons << init_vagon(PassengerTrain, 'Введите кол-во мест:')
       info_success
     when 2
-      vagons << CargoVagon.new
+      vagons << init_vagon(CargoVagon, 'Введите объем вагона:')
       info_success
     else
       info_wrong_input
     end
   end
+
+  def init_vagon(vagon, message)
+    puts message
+    vagon.new(input_string.to_i)
+  end
+
+  def list_train_vagons
+    if get_all_trains.empty?
+      puts 'Нет поездов!'
+    else
+      invitation_to_make_choice(get_all_trains)
+      train = trains[selected_option]
+      train.each_vagon { |vagon| puts vagon }
+    end
+  end
+
+  def fill_vagon
+    invitation_to_make_choice(get_all_trains)
+    train = trains[selected_option]
+
+    puts 'Выберите вагон:'
+    get_all_train_vagons(train)
+    
+    vagon = train.vagons[selected_option]
+
+    # не смог придумать более язящную конструкцию
+    # по условию пассажирский может заполняться за раз на +1
+    # и можно былобы сделать сигнатуру def fill(value = 1)
+    # но тогда бы мы могли вызвать заполнение пассажирского с любым количеством
+    if vagon.type.eql?('Passenger')
+      vagon.fill
+    else
+      vagon.fill(input_string.to_i)
+    end
+
+    info_success
+  end
+
+  def get_all_train_vagons(train)
+    train.vagons.each.with_index { |vagon, i| puts i }
+  end
+
 
   def delete_vagons_from_train
     invitation_to_make_choice(get_all_not_empty_trains)
@@ -281,7 +327,7 @@ class Main
     station = stations[selected_option]
 
     puts "Список поездов на станции #{station}:"
-    puts station.trains
+    station.each_train { |train| puts train }
   end
 
   def exit

@@ -22,6 +22,10 @@ class Train
     register_instance
   end
 
+  def each_vagon(&block)
+    vagons.each { |vagon| block.call(vagon) }
+  end
+
   def valid?
     validate!
     true
@@ -91,7 +95,7 @@ class Train
   attr_reader :route
 
   def validate!
-    raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
+a    raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
     raise 'Invalid number length' unless number.sub('-','').length.eql?(NUMBER_LENGTH)
     raise "Invalid type '#{type}'" if type !~ TYPE_FORMAT 
   end
