@@ -243,7 +243,7 @@ class Main
     invitation_to_make_choice(TYPES)
     case selected_option
     when 1
-      vagons << init_vagon(PassengerTrain, 'Введите кол-во мест:')
+      vagons << init_vagon(PassengerVagon, 'Введите кол-во мест:')
       info_success
     when 2
       vagons << init_vagon(CargoVagon, 'Введите объем вагона:')

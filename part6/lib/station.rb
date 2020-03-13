@@ -20,7 +20,7 @@ class Station
   end
 
   def each_train(&block)
-    trains.each { |train| block.call(train) }
+    trains.each { |train| yield(train) }
   end
 
   def valid?

@@ -23,7 +23,7 @@ class Train
   end
 
   def each_vagon(&block)
-    vagons.each { |vagon| block.call(vagon) }
+    vagons.each { |vagon| yield(vagon) }
   end
 
   def valid?
