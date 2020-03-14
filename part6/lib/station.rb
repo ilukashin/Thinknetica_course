@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class Station
   include InstanceCounter
   attr_reader :trains, :name
 
-  NAME_FORMAT = /\w+/
+  NAME_FORMAT = /\w+/.freeze
   NAME_LENGTH = 3
 
   @@stations = []
@@ -19,7 +21,7 @@ class Station
     register_instance
   end
 
-  def each_train(&block)
+  def each_train
     trains.each { |train| yield(train) }
   end
 
@@ -39,7 +41,7 @@ class Station
   end
 
   def trains_by_type(type)
-    trains.select { |train| train.type == type } 
+    trains.select { |train| train.type == type }
   end
 
   def to_s

@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 class Train
-  include Manufacturer, InstanceCounter
+  include InstanceCounter
+  include Manufacturer
   attr_reader :speed, :vagons, :current_station, :type, :number
 
-  TYPE_FORMAT = /\w+/
-  NUMBER_FORMAT = /^\w{3}-?\w{2}$/
+  TYPE_FORMAT = /\w+/.freeze
+  NUMBER_FORMAT = /^\w{3}-?\w{2}$/.freeze
   NUMBER_LENGTH = 5
 
   @@trains = {}
@@ -22,7 +25,7 @@ class Train
     register_instance
   end
 
-  def each_vagon(&block)
+  def each_vagon
     vagons.each { |vagon| yield(vagon) }
   end
 
@@ -42,23 +45,20 @@ class Train
   end
 
   def attach_vagon(vagon)
-    return puts 'Нужно остановиться!' unless is_staying?
-    if vagon_available?(vagon)
-      vagons << vagon
-      vagon.is_attached = true
-    else
-      raise 'Не подходящий вагон!'
-    end
+    return puts 'Нужно остановиться!' unless staying?
+
+    raise 'Не подходящий вагон!' unless vagon_available?(vagon)
+
+    vagons << vagon
+    vagon.is_attached = true
   end
 
   def detach_vagon
-    if is_staying?
-      vagon = vagons.last
-      vagons.delete(vagon)
-      vagon.is_attached = false
-    else 
-      raise 'Нужно остановиться!'
-    end
+    raise 'Нужно остановиться!' unless staying?
+
+    vagon = vagons.last
+    vagons.delete(vagon)
+    vagon.is_attached = false
   end
 
   def route=(route)
@@ -86,8 +86,6 @@ class Train
     "Поезд №#{number}, тип - #{type}"
   end
 
-  # ниже все методы приватные, потому что они используются только внутри класса train
-  # это его внутренняя реализация, которую мы инкапсулируем
   private
 
   attr_accessor :current_station_index
@@ -95,12 +93,14 @@ class Train
   attr_reader :route
 
   def validate!
-a    raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
-    raise 'Invalid number length' unless number.sub('-','').length.eql?(NUMBER_LENGTH)
-    raise "Invalid type '#{type}'" if type !~ TYPE_FORMAT 
+    a raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
+    unless number.sub('-', '').length.eql?(NUMBER_LENGTH)
+      raise 'Invalid number length'
+    end
+    raise "Invalid type '#{type}'" if type !~ TYPE_FORMAT
   end
 
-  def is_staying?
+  def staying?
     speed.zero?
   end
 
@@ -113,7 +113,7 @@ a    raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
   end
 
   def change_current_station(index)
-    current_station.depart_train(self) if current_station
+    current_station&.depart_train(self)
     self.current_station = stations[index]
     current_station.arrive_train(self)
     self.current_station_index = index

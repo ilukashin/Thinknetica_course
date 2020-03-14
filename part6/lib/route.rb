@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Route
   include InstanceCounter
   attr_reader :departure, :destination
@@ -30,7 +32,7 @@ class Route
   end
 
   def to_s
-    "Маршрут: #{departure} - #{destination}"
+    "Route: #{departure} - #{destination}"
   end
 
   private
@@ -38,7 +40,10 @@ class Route
   attr_accessor :intermediate_points
 
   def validate!
-    raise 'Wrong route parameters!' unless route_points.each { |el| el.is_a?(Station) }
+    raise 'Wrong route parameters!' unless valid_points?
   end
 
+  def valid_points?
+    route_points.all? { |el| el.is_a?(Station) }
+  end
 end

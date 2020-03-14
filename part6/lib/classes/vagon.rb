@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 class Vagon
   include Manufacturer
   attr_accessor :is_attached
   attr_reader :type, :capacity, :loaded_space
 
-  TYPE_FORMAT = /\w+/
+  TYPE_FORMAT = /\w+/.freeze
   TYPE_LENGTH = 4
-  
+
   def initialize(type, capacity)
     @type = type
     @is_attached = false
@@ -26,9 +28,10 @@ class Vagon
   end
 
   private
+
   attr_writer :loaded_space
 
-  def have_enough_space?(value)
+  def enough_space?(value)
     free_space >= value
   end
 
