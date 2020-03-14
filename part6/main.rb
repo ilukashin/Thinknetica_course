@@ -47,6 +47,7 @@ class Main
     puts WELCOME_MESSAGE
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
   def run
     loop do
       invitation_to_make_choice(ACTIONS_DISCRIPTION)
@@ -66,6 +67,7 @@ class Main
       end
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
   private
 
