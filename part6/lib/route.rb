@@ -2,7 +2,12 @@
 
 class Route
   include InstanceCounter
+  include Validation
+
   attr_reader :departure, :destination
+
+  validate :departure, :type, Station
+  validate :destination, :type, Station
 
   def initialize(departure, destination)
     @departure = departure
@@ -10,13 +15,6 @@ class Route
     @intermediate_points = []
     validate!
     register_instance
-  end
-
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
   end
 
   def add_intermediate_point(point)
@@ -38,12 +36,4 @@ class Route
   private
 
   attr_accessor :intermediate_points
-
-  def validate!
-    raise 'Wrong route parameters!' unless valid_points?
-  end
-
-  def valid_points?
-    route_points.all? { |el| el.is_a?(Station) }
-  end
 end

@@ -3,11 +3,16 @@
 class Train
   include InstanceCounter
   include Manufacturer
-  attr_reader :speed, :vagons, :current_station, :type, :number
+  include Validation
 
   TYPE_FORMAT = /\w+/.freeze
   NUMBER_FORMAT = /^\w{3}-?\w{2}$/.freeze
-  NUMBER_LENGTH = 5
+  
+  attr_reader :speed, :vagons, :current_station, :type, :number
+
+  validate :number, :format, NUMBER_FORMAT
+  validate :type, :presence
+  validate :type, :format, TYPE_FORMAT
 
   @@trains = {}
 
@@ -27,13 +32,6 @@ class Train
 
   def each_vagon
     vagons.each { |vagon| yield(vagon) }
-  end
-
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
   end
 
   def increase_speed(speed = 1)
@@ -91,14 +89,6 @@ class Train
   attr_accessor :current_station_index
   attr_writer :speed, :vagons, :current_station
   attr_reader :route
-
-  def validate!
-    a raise "Invalid number '#{number}'" if number !~ NUMBER_FORMAT
-    unless number.sub('-', '').length.eql?(NUMBER_LENGTH)
-      raise 'Invalid number length'
-    end
-    raise "Invalid type '#{type}'" if type !~ TYPE_FORMAT
-  end
 
   def staying?
     speed.zero?

@@ -2,10 +2,13 @@
 
 class Station
   include InstanceCounter
+  include Validation
+
+  NAME_FORMAT = /\w{3}\w*/.freeze
+
   attr_reader :trains, :name
 
-  NAME_FORMAT = /\w+/.freeze
-  NAME_LENGTH = 3
+  validate :name, :format, NAME_FORMAT
 
   @@stations = []
 
@@ -23,13 +26,6 @@ class Station
 
   def each_train
     trains.each { |train| yield(train) }
-  end
-
-  def valid?
-    validate!
-    true
-  rescue StandardError
-    false
   end
 
   def arrive_train(train)
@@ -51,9 +47,4 @@ class Station
   private
 
   attr_writer :trains
-
-  def validate!
-    raise "Invalid name '#{name}'" if name !~ NAME_FORMAT
-    raise 'Name is too short!' if name.length < NAME_LENGTH
-  end
 end

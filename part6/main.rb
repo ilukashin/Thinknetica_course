@@ -5,8 +5,6 @@ Dir['./lib/classes/*.rb'].sort.each { |file| require file }
 Dir['./lib/*.rb'].sort.each { |file| require file }
 
 class Main
-  attr_accessor :stations, :trains, :vagons, :routes
-
   ACTIONS_DISCRIPTION = <<-LIST
     1 - Создать станцию
     2 - Создать поезд
@@ -38,6 +36,8 @@ class Main
   LIST
 
   WELCOME_MESSAGE = 'Добро пожаловать в панель управления ТрансМяс!'
+
+  attr_accessor :stations, :trains, :vagons, :routes
 
   def initialize
     @stations = []
